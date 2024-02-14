@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package shopping;
+
+// The service definition
+service ShoppingService {
+  rpc SearchItem(SearchItemRequest) returns (SearchItemResponse);
+  rpc BuyItem(BuyItemRequest) returns (BuyItemResponse);
+  rpc AddToWishList(AddToWishListRequest) returns (AddToWishListResponse);
+  rpc RateItem(RateItemRequest) returns (RateItemResponse);
+  rpc NotifyClient(Notification) returns (NotificationAck);
+  rpc RegisterSeller(RegisterSellerRequest) returns (RegisterSellerResponse);
+  rpc SellItem(SellItemRequest) returns (SellItemResponse);
+  rpc UpdateItem(UpdateItemRequest) returns (UpdateItemResponse);
+  rpc DeleteItem(DeleteItemRequest) returns (DeleteItemResponse);
+  rpc DisplaySellerItems(DisplaySellerItemsRequest) returns (DisplaySellerItemsResponse);
+}
+
+enum Category {
+  ELECTRONICS = 0;
+  FASHION = 1;
+  OTHERS = 2;
+  ANY = 3;
+}
+
+message SearchItemRequest {
+  string name = 1;
+  Category category = 2;
+}
+
+message Item {
+  string id = 1;
+  string name = 2;
+  Category category = 3;
+  string description = 4;
+  float price = 5;
+  int32 quantity = 6;
+  float rating = 7;
+  string seller_address = 8;
+}
+
+message SearchItemResponse {
+  repeated Item items = 1;
+}
+
+message BuyItemRequest {
+  string item_id = 1;
+  int32 quantity = 2;
+  string buyer_address = 3;
+}
+
+message BuyItemResponse {
+  bool success = 1;
+}
+
+message AddToWishListRequest {
+  string item_id = 1;
+  string buyer_address = 2;
+}
+
+message AddToWishListResponse {
+  bool success = 1;
+}
+
+message RateItemRequest {
+  string item_id = 1;
+  int32 rating = 2; // Assuming rating is an integer for simplicity
+  string buyer_address = 3;
+}
+
+message RateItemResponse {
+  bool success = 1;
+}
+
+message Notification {
+  string message = 1; 
+  Item updated_item = 2; 
+}
+
+message NotificationAck {
+  bool success = 1;
+}
+
+// Message for registering a seller
+message RegisterSellerRequest {
+  string uuid = 1;
+  string address = 2; // ip:port of the seller's notification server
+}
+
+message RegisterSellerResponse {
+  bool success = 1;
+}
+
+// Message for selling an item
+message SellItemRequest {
+  string uuid = 1;
+  string name = 2;
+  Category category = 3;
+  int32 quantity = 4;
+  string description = 5;
+  float price = 6;
+  string seller_address = 7; // This could be different from the notification address
+}
+
+message SellItemResponse {
+  bool success = 1;
+  string item_id = 2; // Unique item ID assigned by the market
+}
+
+// Message for updating an item
+message UpdateItemRequest {
+  string uuid = 1;
+  string item_id = 2;
+  float new_price = 3;
+  int32 new_quantity = 4;
+  string seller_address = 5;
+}
+
+message UpdateItemResponse {
+  bool success = 1;
+}
+
+// Message for deleting an item
+message DeleteItemRequest {
+  string uuid = 1;
+  string item_id = 2;
+  string seller_address = 3;
+}
+
+message DeleteItemResponse {
+  bool success = 1;
+}
+
+// Message for displaying seller items
+message DisplaySellerItemsRequest {
+  string uuid = 1;
+  string seller_address = 2;
+}
+
+message ItemDetails {
+  string item_id = 1;
+  string name = 2;
+  Category category = 3;
+  int32 quantity = 4;
+  string description = 5;
+  float price = 6;
+  float rating = 7; // Assuming an average rating is calculated and stored
+}
+
+message DisplaySellerItemsResponse {
+  repeated ItemDetails items = 1;
+}
