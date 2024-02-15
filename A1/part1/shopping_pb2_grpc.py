@@ -37,7 +37,7 @@ class ShoppingServiceStub(object):
                 )
         self.NotifyClient = channel.unary_unary(
                 '/shopping.ShoppingService/NotifyClient',
-                request_serializer=shopping__pb2.Notification.SerializeToString,
+                request_serializer=shopping__pb2.NotificationRequest.SerializeToString,
                 response_deserializer=shopping__pb2.NotificationAck.FromString,
                 )
         self.RegisterSeller = channel.unary_unary(
@@ -156,7 +156,7 @@ def add_ShoppingServiceServicer_to_server(servicer, server):
             ),
             'NotifyClient': grpc.unary_unary_rpc_method_handler(
                     servicer.NotifyClient,
-                    request_deserializer=shopping__pb2.Notification.FromString,
+                    request_deserializer=shopping__pb2.NotificationRequest.FromString,
                     response_serializer=shopping__pb2.NotificationAck.SerializeToString,
             ),
             'RegisterSeller': grpc.unary_unary_rpc_method_handler(
@@ -275,7 +275,7 @@ class ShoppingService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/shopping.ShoppingService/NotifyClient',
-            shopping__pb2.Notification.SerializeToString,
+            shopping__pb2.NotificationRequest.SerializeToString,
             shopping__pb2.NotificationAck.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

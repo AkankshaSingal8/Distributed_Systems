@@ -2,13 +2,32 @@ import grpc
 import shopping_pb2
 import shopping_pb2_grpc
 import uuid
+import threading
+import time
 
 class SellerClient:
     def __init__(self, address):
         self.channel = grpc.insecure_channel(address)
-        self.stub = shopping_pb2_grpc.ShoppingStub(self.channel)
+        self.stub = shopping_pb2_grpc.ShoppingServiceStub(self.channel)
         self.seller_uuid = str(uuid.uuid1())
-        self.seller_address = "localhost:50051"  # Example seller address for notification server
+        self.seller_address = "localhost:50052"  # Example seller address for notification server
+        self.listen_for_notifications()
+
+    def listen_for_notifications(self):
+        def notification_listener():
+            while True:  # Outer loop to reconnect in case of disconnection
+                try:
+                    response = self.stub.NotifyClient(shopping_pb2.NotificationRequest(clientId=self.seller_address))
+                    for notification in response.message:
+                        print(notification)
+                    # If the server closes the connection, the for-loop will exit.
+                except:
+                    time.sleep(10)  # Wait before attempting to reconnect
+
+                time.sleep(10)  # Wait before attempting to reconnect
+        # Start the listener thread
+        listener_thread = threading.Thread(target=notification_listener, daemon=True)
+        listener_thread.start()
 
     def register_seller(self):
         response = self.stub.RegisterSeller(shopping_pb2.RegisterSellerRequest(
@@ -31,7 +50,7 @@ class SellerClient:
             seller_address=self.seller_address
         ))
         if response.success:
-            print(f"Item listed successfully with Item ID: {response.itemId}")
+            print(f"Item listed successfully with Item ID: {response.item_id}")
         else:
             print("Failed to list item.")
 
@@ -58,18 +77,30 @@ class SellerClient:
         print("Delete Item:", "SUCCESS" if response.success else "FAIL")
 
     def display_items(self):
+        # Mapping of category enums to their string representations
+        category_names = {
+            shopping_pb2.Category.ELECTRONICS: "ELECTRONICS",
+            shopping_pb2.Category.FASHION: "FASHION",
+            shopping_pb2.Category.OTHERS: "OTHERS",
+            shopping_pb2.Category.ANY: "ANY"
+        }
+
         response = self.stub.DisplaySellerItems(shopping_pb2.DisplaySellerItemsRequest(
             uuid=self.seller_uuid,
             seller_address=self.seller_address
         ))
         for item in response.items:
+            # Translate the category number to its name
+            category_name = category_names.get(item.category, "UNKNOWN")
+
             print(f"""
-–
-Item ID: {item.id}, Name: {item.name}, Category: {item.category.name},
-Description: {item.description}, Quantity Remaining: {item.quantity},
-Price: ${item.price}, Rating: {item.rating} / 5
-–
-""")
+    –
+            Item ID: {item.id}, Name: {item.name}, Category: {category_name},
+            Description: {item.description}, Quantity Remaining: {item.quantity},
+            Price: ${item.price}, Rating: {item.rating} / 5
+    –
+            """)
+
 
 
 seller_client = SellerClient('localhost:50051')  # Market server address

@@ -8,7 +8,7 @@ service ShoppingService {
   rpc BuyItem(BuyItemRequest) returns (BuyItemResponse);
   rpc AddToWishList(AddToWishListRequest) returns (AddToWishListResponse);
   rpc RateItem(RateItemRequest) returns (RateItemResponse);
-  rpc NotifyClient(Notification) returns (NotificationAck);
+  rpc NotifyClient(NotificationRequest) returns (NotificationAck);
   rpc RegisterSeller(RegisterSellerRequest) returns (RegisterSellerResponse);
   rpc SellItem(SellItemRequest) returns (SellItemResponse);
   rpc UpdateItem(UpdateItemRequest) returns (UpdateItemResponse);
@@ -72,13 +72,12 @@ message RateItemResponse {
   bool success = 1;
 }
 
-message Notification {
-  string message = 1; 
-  Item updated_item = 2; 
+message NotificationRequest {
+  string clientId = 1; // Unique identifier for the client (seller or buyer)
 }
 
 message NotificationAck {
-  bool success = 1;
+  repeated string message = 1;
 }
 
 // Message for registering a seller
@@ -137,16 +136,8 @@ message DisplaySellerItemsRequest {
   string seller_address = 2;
 }
 
-message ItemDetails {
-  string item_id = 1;
-  string name = 2;
-  Category category = 3;
-  int32 quantity = 4;
-  string description = 5;
-  float price = 6;
-  float rating = 7; // Assuming an average rating is calculated and stored
-}
+
 
 message DisplaySellerItemsResponse {
-  repeated ItemDetails items = 1;
+  repeated Item items = 1;
 }
