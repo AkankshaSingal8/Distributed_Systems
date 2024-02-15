@@ -14,7 +14,7 @@ def publishVideo(youtuber_name, video_name):
         pika.ConnectionParameters(host=hostname, port=portnum, credentials=credentials)
     )
     channel = connection.channel()
-    channel.queue_declare(queue=queue_name)
+    channel.queue_declare(queue=queue_name, durable = True)
 
     message = {
         'youtuber': youtuber_name,

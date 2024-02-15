@@ -56,7 +56,7 @@ def receiveNotifications(username):
                              durable=True)
     
     # Ensure the queue for this user exists and is bound to the exchange
-    q = 'myqueue' #username + '_notifications'  # Unique queue name for each user
+    q = username + '_notifications'  # Unique queue name for each user
     channel.queue_declare(queue=q)
     channel.queue_bind(queue=q,
                        exchange=exchange_notifications,

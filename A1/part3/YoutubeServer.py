@@ -25,8 +25,8 @@ channel = connection.channel()
 channel.queue_delete(queue = queue_name_user)
 channel.queue_delete(queue = queue_name_youtuber)
 
-channel.queue_declare(queue = queue_name_user)
-channel.queue_declare(queue = queue_name_youtuber)
+channel.queue_declare(queue = queue_name_user, durable = True)
+channel.queue_declare(queue = queue_name_youtuber, durable = True)
 
 # exchange for fanout subscription
 channel.exchange_delete(exchange = exchange_notifications)
