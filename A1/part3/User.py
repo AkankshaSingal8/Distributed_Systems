@@ -30,7 +30,7 @@ def updateSubscription(username, youtuber_name, status):
     )
     channel = connection.channel()
 
-    channel.queue_declare(queue=queue_name)
+    channel.queue_declare(queue=queue_name, durable = True)
 
     message = {
         'user': username,
@@ -57,7 +57,7 @@ def receiveNotifications(username):
     
     # Ensure the queue for this user exists and is bound to the exchange
     q = username + '_notifications'  # Unique queue name for each user
-    channel.queue_declare(queue=q)
+    channel.queue_declare(queue=q, durable = True)
     channel.queue_bind(queue=q,
                        exchange=exchange_notifications,
                        routing_key=username)

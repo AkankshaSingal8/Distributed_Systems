@@ -43,6 +43,9 @@ def notify_users(youtuber, video):
             info = {'youtuber': youtuber, 'video': video}
             msg = json.dumps(info)
             
+            q = user + '_notifications'  # Unique queue name for each user
+            channel.queue_declare(queue=q, durable = True)
+            
             channel.basic_publish(exchange = exchange_notifications,
                                     routing_key = user,
                                     body = msg,
