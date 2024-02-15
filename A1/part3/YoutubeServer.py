@@ -36,21 +36,20 @@ channel.exchange_declare(exchange = exchange_notifications,
                          durable = True)
 
 def notify_users(youtuber, video):
-    for user in user_sub.keys():
-        # iterate through each and find if the youtuber is in the subscriptions
-        if youtuber in user_sub[user]:
+    for user, youtubers in user_sub.items():
+        if youtuber in youtubers:
             print("Sending message to:", user, youtuber)
             # send message
             info = {'youtuber': youtuber, 'video': video}
             msg = json.dumps(info)
             
             channel.basic_publish(exchange = exchange_notifications,
-                                  routing_key = user,
-                                  body = msg,
-                                  properties=pika.BasicProperties(
-                                      delivery_mode=2,
-                                  ),
-                                  )
+                                    routing_key = user,
+                                    body = msg,
+                                    properties=pika.BasicProperties(
+                                        delivery_mode=2,
+                                    ),
+                                    )
             
 def callback_youtuber(ch, method, properties, body):
     processed_msg = json.loads(body)
