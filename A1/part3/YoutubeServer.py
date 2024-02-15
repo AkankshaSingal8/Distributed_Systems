@@ -2,7 +2,7 @@ import sys
 import pika
 import json
 
-hostname = 'localhost'
+hostname = '0.0.0.0'
 portnum = 5672
 
 # youtuber90

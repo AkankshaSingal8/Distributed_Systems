@@ -2,15 +2,18 @@ import sys
 import pika
 import json
 
-hostname = 'localhost'
+hostname = '34.170.100.8'
 portnum = 5672
 queue_name = 'youtuber'
 exchange_name = 'upload_video'
 
 def publishVideo(youtuber_name, video_name):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(hostname, portnum))
-    channel = connection.channel()
+    credentials = pika.PlainCredentials('myuser', 'mypassword')  # Use the credentials you've set up
 
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host=hostname, port=portnum, credentials=credentials)
+    )
+    channel = connection.channel()
     channel.queue_declare(queue=queue_name)
 
     message = {

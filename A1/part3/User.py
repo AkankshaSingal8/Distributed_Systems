@@ -2,8 +2,11 @@ import sys
 import pika
 import json
 
+# rabbitmq requires credentials to do anything outside localhost... 
+# guest username/password only works for localhost
+
 portnum = 5672
-hostname = 'localhost'
+hostname = '34.170.100.8'           # server
 queue_name = 'user'
 
 exchange_subscribe = 'user_subscribe'
@@ -20,7 +23,11 @@ def notification_callback(ch, method, properties, body):
     print(f"New Notification: {utuber} uploaded {video}")
 
 def updateSubscription(username, youtuber_name, status):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(hostname, portnum))
+    credentials = pika.PlainCredentials('myuser', 'mypassword') 
+
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host=hostname, port=portnum, credentials=credentials)
+    )
     channel = connection.channel()
 
     channel.queue_declare(queue=queue_name)
@@ -38,7 +45,10 @@ def updateSubscription(username, youtuber_name, status):
     connection.close()
     
 def receiveNotifications(username):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(hostname, portnum))
+    credentials = pika.PlainCredentials('myuser', 'mypassword')
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host=hostname, port=portnum, credentials=credentials)
+    )
     channel = connection.channel()
     
     channel.exchange_declare(exchange=exchange_notifications,
