@@ -15,7 +15,6 @@ exchange_notifications = 'notifications'
 
 # user lists
 user_sub = {}       # dictionary containing user:subscriptions
-utuber_vid = {}     # dictionary containing youtuber:video pairs
 
 # declare channels
 connection = pika.BlockingConnection(pika.ConnectionParameters(hostname, portnum))
